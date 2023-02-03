@@ -81,7 +81,7 @@ class Robot : public frc::TimedRobot {
   frc::Trajectory m_trajectory = frc::TrajectoryGenerator::GenerateTrajectory(
       frc::Pose2d{0_m, 0_m, 0_rad},
       {frc::Translation2d{1_m, 1_m}, frc::Translation2d{2_m, -1_m}},
-      frc::Pose2d{3_m, 0_m, 0_rad}, frc::TrajectoryGenerator(3_fps, 3_fps_sq));
+      frc::Pose2d{3_m, 0_m, 0_rad}, frc::TrajectoryConfig(3_fps, 3_fps_sq));
 
   // The Ramsete Controller to follow the trajectory.
   frc::RamseteController m_ramseteController;

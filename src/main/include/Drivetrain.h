@@ -7,7 +7,7 @@
 #include <numbers>
 #include "config.h"
 
-#include <frc/AnalogGyro.h>
+#include <AHRS.h>
 #include <frc/Encoder.h>
 #include <frc/controller/PIDController.h>
 #include <frc/controller/SimpleMotorFeedforward.h>
@@ -19,6 +19,8 @@
 #include <ctre/phoenix/motorcontrol/GroupMotorControllers.h>
 #include <units/angular_velocity.h>
 #include <units/length.h>
+
+using namespace frc;
 
 /**
  * Represents a differential drive style drivetrain.
@@ -63,7 +65,7 @@ class Drivetrain {
   frc::Pose2d GetPose() const;
 
  private:
-  static constexpr units::length::meter_t kTrackWidth = 0.381;
+  static constexpr units::length::meter_t kTrackWidth = 0.381_m;
   static constexpr double kWheelRadius = 0.0508;  // meters
   static constexpr int kEncoderResolution = 4096;
 
@@ -78,7 +80,7 @@ class Drivetrain {
   frc2::PIDController m_leftPIDController{1.0, 0.0, 0.0};
   frc2::PIDController m_rightPIDController{1.0, 0.0, 0.0};
 
-  frc::AnalogGyro m_gyro{0};
+  AHRS m_gyro{SerialPort::kUSB};
 
   frc::DifferentialDriveKinematics m_kinematics{kTrackWidth};
   frc::DifferentialDriveOdometry m_odometry{
