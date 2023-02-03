@@ -74,7 +74,7 @@ class Drivetrain {
   WPI_TalonFX m_rightLeader{RIGHT_FRONT_PORT};
   WPI_TalonFX m_rightFollower{RIGHT_BACK_PORT};
 
-  TalonFX m_rightEncoder{5};
+  TalonFX m_rightEncoder{1};
   TalonFX m_leftEncoder{3};
 
   frc2::PIDController m_leftPIDController{1.0, 0.0, 0.0};

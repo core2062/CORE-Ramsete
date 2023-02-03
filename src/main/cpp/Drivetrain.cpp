@@ -14,7 +14,9 @@ void Drivetrain::SetSpeeds(const frc::DifferentialDriveWheelSpeeds& speeds) {
       m_rightEncoder.GetSelectedSensorPosition(), speeds.right.value());
 
   m_leftLeader.SetVoltage(units::volt_t{leftOutput} + leftFeedforward);
-  m_rightLeader.SetVoltage(units::volt_t{rightOutput} + rightFeedforward);
+  m_leftFollower.SetVoltage(units::volt_t{leftOutput} + leftFeedforward);
+  m_rightLeader.SetVoltage(-units::volt_t{rightOutput} + rightFeedforward);
+  m_rightFollower.SetVoltage(-units::volt_t{rightOutput} + rightFeedforward);
 }
 
 void Drivetrain::Drive(units::meters_per_second_t xSpeed,
