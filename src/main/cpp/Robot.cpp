@@ -10,6 +10,7 @@
 #include <frc/smartdashboard/Field2d.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/trajectory/TrajectoryGenerator.h>
+#include <iostream>
 
 #include "Drivetrain.h"
 
@@ -47,6 +48,7 @@ class Robot : public frc::TimedRobot {
       // Set the linear and angular speeds.
       m_drive.Drive(refChassisSpeeds.vx, refChassisSpeeds.omega);
     } else {
+      std::cout << "end of TotalTime" << std::endl;
       m_drive.Drive(0_mps, 0_rad_per_s);
     }
   }
@@ -77,14 +79,20 @@ class Robot : public frc::TimedRobot {
 
   Drivetrain m_drive;
 
-  // An example trajectory to follow.
+
+  // frc::Trajectory m_trajectory = frc::TrajectoryGenerator::GenerateTrajectory(
+  //     frc::Pose2d{0_m, 0_m, 0_rad},
+  //     {frc::Translation2d{1_m, 0_m}}, 
+  //     frc::Pose2d{2_m, 0_m, 0_rad}, frc::TrajectoryConfig(0.5_mps, 1_mps_sq));
+
+  // // An example trajectory to follow.
   frc::Trajectory m_trajectory = frc::TrajectoryGenerator::GenerateTrajectory(
       frc::Pose2d{0_m, 0_m, 0_rad},
       {frc::Translation2d{1_m, 1_m}, frc::Translation2d{2_m, -1_m}},
-      frc::Pose2d{3_m, 0_m, 0_rad}, frc::TrajectoryConfig(3_fps, 3_fps_sq));
+      frc::Pose2d{3_m, 0_m, 0_rad}, frc::TrajectoryConfig(1_fps, 1_fps_sq));
 
   // The Ramsete Controller to follow the trajectory.
-  frc::RamseteController m_ramseteController;
+  frc::RamseteController m_ramseteController{2.0 * 1_rad * 1_rad / (1_m * 1_m), 0.7 / 1_rad};
 
   // The timer to use during the autonomous period.
   frc::Timer m_timer;

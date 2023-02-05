@@ -4,19 +4,16 @@
 
 #include "Drivetrain.h"
 
-
 void Drivetrain::SetSpeeds(const frc::DifferentialDriveWheelSpeeds& speeds) {
   const auto leftFeedforward = m_feedforward.Calculate(speeds.left);
   const auto rightFeedforward = m_feedforward.Calculate(speeds.right);
   const double leftOutput = m_leftPIDController.Calculate(
-      m_leftEncoder.GetSelectedSensorPosition(), speeds.left.value());
+      m_leftLeader.GetSelectedSensorVelocity(), speeds.left.value());
   const double rightOutput = m_rightPIDController.Calculate(
-      m_rightEncoder.GetSelectedSensorPosition(), speeds.right.value());
+      m_rightLeader.GetSelectedSensorVelocity(), speeds.right.value());
 
   m_leftLeader.SetVoltage(units::volt_t{leftOutput} + leftFeedforward);
-  m_leftFollower.SetVoltage(units::volt_t{leftOutput} + leftFeedforward);
-  m_rightLeader.SetVoltage(-units::volt_t{rightOutput} + rightFeedforward);
-  m_rightFollower.SetVoltage(-units::volt_t{rightOutput} + rightFeedforward);
+  m_rightLeader.SetVoltage(units::volt_t{rightOutput} + rightFeedforward);
 }
 
 void Drivetrain::Drive(units::meters_per_second_t xSpeed,
@@ -26,16 +23,23 @@ void Drivetrain::Drive(units::meters_per_second_t xSpeed,
 
 void Drivetrain::UpdateOdometry() {
   m_odometry.Update(m_gyro.GetRotation2d(),
-                    units::length::meter_t{m_leftEncoder.GetSelectedSensorPosition()},
-                    units::length::meter_t{m_rightEncoder.GetSelectedSensorPosition()});
+                    units::meter_t{NativeUnitsToDistanceMeters(m_leftLeader.GetSelectedSensorPosition())},
+                    units::meter_t{NativeUnitsToDistanceMeters(m_rightLeader.GetSelectedSensorPosition())});
 }
 
 void Drivetrain::ResetOdometry(const frc::Pose2d& pose) {
   m_odometry.ResetPosition(m_gyro.GetRotation2d(),
-                           units::length::meter_t{m_leftEncoder.GetSelectedSensorPosition()},
-                           units::length::meter_t{m_rightEncoder.GetSelectedSensorPosition()}, pose);
+                           units::meter_t{NativeUnitsToDistanceMeters(m_leftLeader.GetSelectedSensorPosition())},
+                           units::meter_t{NativeUnitsToDistanceMeters(m_rightLeader.GetSelectedSensorPosition())}, pose);
 }
 
 frc::Pose2d Drivetrain::GetPose() const {
   return m_odometry.GetPose();
 }
+
+double Drivetrain::NativeUnitsToDistanceMeters(double sensorCounts){
+    double motorRotations = (double)sensorCounts / kEncoderResolution;
+    double wheelRotations = motorRotations / kGearRatio;
+    double positionMeters = wheelRotations * (2 * std::numbers::pi * kWheelRadius);
+    return positionMeters;
+  }
