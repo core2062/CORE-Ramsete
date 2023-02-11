@@ -5,6 +5,7 @@
 #pragma once
 
 #include <numbers>
+#include <iostream>
 
 #include <frc/AnalogGyro.h>
 #include <frc/Encoder.h>
@@ -17,6 +18,14 @@
 #include <AHRS.h>
 #include <ctre/Phoenix.h>
 #include <ctre/phoenix/motorcontrol/GroupMotorControllers.h>
+
+
+  constexpr auto kDriveVelR = 0.23301;
+  constexpr auto kDriveVelL = 0.1802;
+  constexpr auto kDriveVel = 0.1802;
+  constexpr auto ks = 0.23162_V;
+  constexpr auto kv = 1.7934 * 1_V * 1_s / 1_m;
+  constexpr auto ka = 0.15015 * 1_V * 1_s * 1_s / 1_m;
 
 /**
  * Represents a differential drive style drivetrain.
@@ -60,7 +69,7 @@ class Drivetrain {
     m_leftFollower.SetInverted(TalonFXInvertType::FollowMaster);
   }
 
-  double NativeUnitsToDistanceMeters(double sensorCounts);
+  units::meter_t NativeUnitsToDistanceMeters(double sensorCounts);
 
   static constexpr units::meters_per_second_t kMaxSpeed =
       3.0_mps;  // 3 meters per second
@@ -75,10 +84,12 @@ class Drivetrain {
   frc::Pose2d GetPose() const;
 
  private:
-  static constexpr units::meter_t kTrackWidth = 1.1684_m;
+  static constexpr units::meter_t kTrackWidth = 0.5715_m;
   static constexpr double kWheelRadius = 0.1524;  // meters
-  static constexpr double kGearRatio = 12.7;
+  static constexpr double kGearRatio = 7.95;
   static constexpr int kEncoderResolution = 2048;
+  static constexpr double kMaxSpeedDouble = 1;
+
 
   WPI_TalonFX m_rightLeader{1};
   WPI_TalonFX m_rightFollower{2};
@@ -100,8 +111,9 @@ class Drivetrain {
   // frc::Encoder m_leftEncoder{0, 1};
   // frc::Encoder m_rightEncoder{2, 3};
 
-  frc2::PIDController m_leftPIDController{1.0, 0.0, 0.0};
-  frc2::PIDController m_rightPIDController{1.0, 0.0, 0.0};
+  frc2::PIDController m_leftPIDController{kDriveVelL, 0.0, 0.0};
+  frc2::PIDController m_rightPIDController{kDriveVelR, 0.0, 0.0};
+  
 
   AHRS m_gyro{frc::SerialPort::kUSB};
 
@@ -112,5 +124,5 @@ class Drivetrain {
 
   // Gains are for example purposes only - must be determined for your own
   // robot!
-  frc::SimpleMotorFeedforward<units::meters> m_feedforward{0.11578_V, 2.8026 * 1_V * 1_s / 1_m, 0.2154 * 1_V * 1_s * 1_s / 1_m};
+  frc::SimpleMotorFeedforward<units::meters> m_feedforward{ks, kv, ka};
 };
